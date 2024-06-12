@@ -13,6 +13,7 @@ namespace SlopChat
         public class Entry
         {
             public string PlayerName;
+            public uint PlayerId;
             public string Message;
         }
 
@@ -28,7 +29,7 @@ namespace SlopChat
             UpdateLabel();
         }
 
-        private void UpdateLabel()
+        public void UpdateLabel()
         {
             var newText = "";
             for(var i = 0; i < Entries.Count; i++)

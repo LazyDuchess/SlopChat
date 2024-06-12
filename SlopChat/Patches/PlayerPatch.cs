@@ -21,7 +21,7 @@ namespace SlopChat.Patches
             if (__instance.phone.IsOn) return;
             var chatController = ChatController.Instance;
             if (chatController == null) return;
-            if (chatController.CurrentState != ChatController.ChatStates.Typing) return;
+            if (chatController.CurrentChatState != ChatController.ChatStates.Typing) return;
             if (__instance.spraycanState != Player.SpraycanState.NONE) return;
 
             __instance.anim.speed = 0f;
@@ -42,7 +42,7 @@ namespace SlopChat.Patches
             var chatController = ChatController.Instance;
 
             if (chatController == null) return;
-            if (chatController.CurrentState != ChatController.ChatStates.Typing) return;
+            if (chatController.CurrentChatState != ChatController.ChatStates.Typing) return;
 
             __instance.characterVisual.phoneActive = __instance.phoneLayerWeight >= 1f;
         }
@@ -59,7 +59,7 @@ namespace SlopChat.Patches
 
             if (__instance.isAI) return true;
 
-            if (chatController.CurrentState != ChatController.ChatStates.Typing) return true;
+            if (chatController.CurrentChatState != ChatController.ChatStates.Typing) return true;
 
             __instance.UpdateSprayCanShake();
 
