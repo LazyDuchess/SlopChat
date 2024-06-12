@@ -13,5 +13,6 @@ namespace SlopChat
         public ChatController.NetworkStates NetworkState;
         public uint HostId;
         public DateTime LastHeartBeat;
+        public DateTime HostDate;
     }
 }

@@ -60,6 +60,8 @@ namespace SlopChat
         private float _chatHistoryTimer = 0f;
         private float _chatHistoryTime = 1f;
 
+        private DateTime _hostDate;
+
         private void Awake()
         {
             _slopAPI = APIManager.API;
@@ -102,6 +104,7 @@ namespace SlopChat
                     player.Name = _slopAPI.GetPlayerName(playerId);
                     player.Id = playerId;
                     player.HostId = heartBeat.HostId;
+                    player.HostDate = heartBeat.HostStartTime;
                     break;
 
                 case ChatHistoryPacket.kGUID:
@@ -184,7 +187,8 @@ namespace SlopChat
             var packet = new HeartbeatPacket()
             {
                 NetworkState = CurrentNetworkState,
-                HostId = _hostId
+                HostId = _hostId,
+                HostStartTime = _hostDate
             };
             PacketFactory.SendPacket(packet, _slopAPI);
         }
@@ -252,30 +256,33 @@ namespace SlopChat
 
         private void NetworkServerCheckForOtherServers()
         {
-            var myId = uint.MaxValue;
-            var lowestHostId = uint.MaxValue;
+            var myHostTime = (DateTime.Now - _hostDate).TotalSeconds;
+            ChatPlayer oldestHost = null;
+            var oldestHostTime = 0D;
             foreach(var player in ChatPlayersById)
             {
                 if (_slopAPI.PlayerIDExists(player.Key) == false)
                     continue;
-                if (player.Value.NetworkState == NetworkStates.Client)
+                if (player.Value.NetworkState != NetworkStates.Server)
+                    continue;
+                var hostTime = (DateTime.Now - player.Value.HostDate).TotalSeconds;
+                if (oldestHost == null)
                 {
-                    if (_slopAPI.PlayerIDExists(player.Value.HostId) == false && player.Value.HostId < myId && player.Value.HostId != uint.MaxValue)
-                        myId = player.Value.HostId;
+                    oldestHost = player.Value;
+                    oldestHostTime = hostTime;
                 }
-                else if (player.Value.NetworkState == NetworkStates.Server)
+                else
                 {
-                    if (player.Key != uint.MaxValue && player.Key < lowestHostId)
-                        lowestHostId = player.Key;
+                    if (hostTime > oldestHostTime)
+                    {
+                        oldestHost = player.Value;
+                        oldestHostTime = hostTime;
+                    }
                 }
             }
-
-            if (myId != uint.MaxValue && lowestHostId != uint.MaxValue)
+            if (oldestHost != null && oldestHostTime > myHostTime)
             {
-                if (lowestHostId < myId)
-                {
-                    ConnectToHost(lowestHostId);
-                }
+                ConnectToHost(oldestHost.Id);
             }
         }
 
@@ -325,6 +332,7 @@ namespace SlopChat
 
         private void HostChat()
         {
+            _hostDate = DateTime.Now;
             _chatHistoryTimer = 0f;
             _hostId = uint.MaxValue;
             CurrentNetworkState = NetworkStates.Server;
