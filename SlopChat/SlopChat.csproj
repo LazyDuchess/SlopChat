@@ -26,7 +26,9 @@
   </ItemGroup>
   
   <ItemGroup>
-    <ProjectReference Include="..\libs\SlopCrew\SlopCrew.API\SlopCrew.API.csproj" />
+    <ProjectReference Include="..\libs\SlopCrew\SlopCrew.API\SlopCrew.API.csproj">
+      <Private>False</Private>
+    </ProjectReference>
   </ItemGroup>
   
   <ItemGroup>
