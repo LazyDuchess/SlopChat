@@ -7,6 +7,7 @@ using Reptile;
 using TMPro;
 using System.Linq;
 using UnityEngine.Video;
+using SlopCrew.API;
 
 namespace SlopChat
 {
@@ -27,12 +28,18 @@ namespace SlopChat
 
         private GameObject _chatUI;
         private TextMeshProUGUI _inputLabel;
+        private TextMeshProUGUI _playersLabel;
         private ChatHistory _history;
+
         private float _caretTimer = 0f;
         private float _caretTime = 0.5f;
 
+        private ISlopCrewAPI _slopAPI;
+
         private void Awake()
         {
+            _slopAPI = APIManager.API;
+
             _assets = SlopChatPlugin.Instance.Assets;
             _config = SlopChatPlugin.Instance.ChatConfig;
 
@@ -41,6 +48,7 @@ namespace SlopChat
             _chatUI = GameObject.Instantiate(prefab);
             var chatCanvas = _chatUI.transform.Find("Canvas");
             _inputLabel = chatCanvas.transform.Find("Chat Input").GetComponent<TextMeshProUGUI>();
+            _playersLabel = chatCanvas.transform.Find("Chat Players").GetComponent<TextMeshProUGUI>();
             _history = chatCanvas.transform.Find("Chat History").gameObject.AddComponent<ChatHistory>();
             _chatUI.transform.SetParent(Core.Instance.UIManager.gameplay.transform);
             EnterState(ChatStates.Default);
@@ -74,6 +82,7 @@ namespace SlopChat
             _caretTimer = 0f;
             CurrentInput = "";
             _inputLabel.text = "";
+            _playersLabel.transform.gameObject.SetActive(false);
 
             if (CurrentState == ChatStates.Typing)
             {
@@ -86,6 +95,7 @@ namespace SlopChat
                 case ChatStates.Default:
                     break;
                 case ChatStates.Typing:
+                    _playersLabel.transform.gameObject.SetActive(true);
                     InputUtils.PushInputBlocker();
                     DisableInputs();
                     break;
@@ -100,12 +110,12 @@ namespace SlopChat
                 EnterState(ChatStates.Typing);
         }
 
-        private void SendChatMessage(string text)
+        private void SendChatMessage(string playerName, string text)
         {
             var plugin = SlopChatPlugin.Instance;
             text = plugin.SanitizeMessage(text);
             if (!plugin.ValidMessage(text)) return;
-            var entry = new ChatHistory.Entry() {PlayerName = "You", Message = text };
+            var entry = new ChatHistory.Entry() {PlayerName = playerName, Message = text };
             _history.Append(entry);
         }
 
@@ -146,7 +156,7 @@ namespace SlopChat
                         }
                         else if ((c == '\n') || (c == '\r')) // enter/return
                         {
-                            SendChatMessage(CurrentInput);
+                            SendChatMessage(_slopAPI.PlayerName, CurrentInput);
                             EnterState(ChatStates.Default);
                             return;
                         }
