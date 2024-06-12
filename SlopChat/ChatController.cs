@@ -10,6 +10,7 @@ using UnityEngine.Video;
 using SlopCrew.API;
 using SlopChat.Packets;
 using System.Numerics;
+using Unity.Collections;
 
 namespace SlopChat
 {
@@ -60,6 +61,9 @@ namespace SlopChat
         private float _chatHistoryTimer = 0f;
         private float _chatHistoryTime = 1f;
 
+        private float _chatFadeTimer = 0f;
+        private float _chatFadeTime = 30f;
+
         private DateTime _hostDate;
 
         private void Awake()
@@ -100,7 +104,7 @@ namespace SlopChat
                         ChatPlayersById[playerId] = player;
                     }
                     player.NetworkState = heartBeat.NetworkState;
-                    player.LastHeartBeat = DateTime.Now;
+                    player.LastHeartBeat = DateTime.UtcNow;
                     player.Name = _slopAPI.GetPlayerName(playerId);
                     player.Id = playerId;
                     player.HostId = heartBeat.HostId;
@@ -119,8 +123,16 @@ namespace SlopChat
                     if (chPlayer.NetworkState != NetworkStates.Server)
                         break;
                     var chatHistory = packet as ChatHistoryPacket;
+                    foreach(var entry in chatHistory.Entries)
+                    {
+                        if (entry.PlayerId == uint.MaxValue)
+                        {
+                            entry.PlayerId = playerId;
+                        }
+                    }
                     _history.Entries = chatHistory.Entries;
-                    _history.UpdateLabel();
+                    if (_history.UpdateLabel())
+                        PingChat();
                     break;
 
                 case MessagePacket.kGUID:
@@ -143,6 +155,7 @@ namespace SlopChat
                         PlayerId = playerId,
                         Message = SlopChatPlugin.Instance.SanitizeMessage(messagePacket.Message)
                     });
+                    PingChat();
                     SendChatHistory();
                     break;
             }
@@ -153,7 +166,7 @@ namespace SlopChat
             var newDict = new Dictionary<uint, ChatPlayer>();
             foreach(var player in ChatPlayersById)
             {
-                var lastHeartBeatTime = (DateTime.Now - player.Value.LastHeartBeat).TotalSeconds;
+                var lastHeartBeatTime = (DateTime.UtcNow - player.Value.LastHeartBeat).TotalSeconds;
                 if (lastHeartBeatTime <= _heartBeatTimeout && _slopAPI.PlayerIDExists(player.Key) == true)
                 {
                     newDict[player.Key] = player.Value;
@@ -256,7 +269,7 @@ namespace SlopChat
 
         private void NetworkServerCheckForOtherServers()
         {
-            var myHostTime = (DateTime.Now - _hostDate).TotalSeconds;
+            var myHostTime = (DateTime.UtcNow - _hostDate).TotalSeconds;
             ChatPlayer oldestHost = null;
             var oldestHostTime = 0D;
             foreach(var player in ChatPlayersById)
@@ -265,7 +278,7 @@ namespace SlopChat
                     continue;
                 if (player.Value.NetworkState != NetworkStates.Server)
                     continue;
-                var hostTime = (DateTime.Now - player.Value.HostDate).TotalSeconds;
+                var hostTime = (DateTime.UtcNow - player.Value.HostDate).TotalSeconds;
                 if (oldestHost == null)
                 {
                     oldestHost = player.Value;
@@ -326,13 +339,15 @@ namespace SlopChat
 
         private void ConnectToHost(uint playerId)
         {
+            PingChat();
             _hostId = playerId;
             CurrentNetworkState = NetworkStates.Client;
         }
 
         private void HostChat()
         {
-            _hostDate = DateTime.Now;
+            PingChat();
+            _hostDate = DateTime.UtcNow;
             _chatHistoryTimer = 0f;
             _hostId = uint.MaxValue;
             CurrentNetworkState = NetworkStates.Server;
@@ -397,6 +412,7 @@ namespace SlopChat
             {
                 var entry = new ChatHistory.Entry() { PlayerName = _slopAPI.PlayerName, PlayerId = uint.MaxValue, Message = text };
                 _history.Append(entry);
+                PingChat();
                 SendChatHistory();
             }
             else if (CurrentNetworkState == NetworkStates.Client)
@@ -417,6 +433,7 @@ namespace SlopChat
 
         private void TypingUpdate()
         {
+            PingChat();
             var gameInput = Core.Instance.GameInput;
             var enabledMaps = gameInput.GetAllCurrentEnabledControllerMapCategoryIDs(0);
             if (enabledMaps.controllerMapCategoryIDs.Length > 0 || !_chatUI.activeInHierarchy)
@@ -496,6 +513,23 @@ namespace SlopChat
         {
             ChatUpdate();   
             NetworkUpdate();
+            _chatFadeTimer += Core.dt;
+            if (_chatFadeTimer >= _chatFadeTime)
+            {
+                _chatFadeTimer = _chatFadeTime;
+                if (_history.gameObject.activeSelf)
+                    _history.gameObject.SetActive(false);
+            }
+            else
+            {
+                if (!_history.gameObject.activeSelf)
+                    _history.gameObject.SetActive(true);
+            }
+        }
+
+        private void PingChat()
+        {
+            _chatFadeTimer = 0f;
         }
 
         private void OnDestroy()

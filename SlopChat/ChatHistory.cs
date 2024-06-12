@@ -29,7 +29,7 @@ namespace SlopChat
             UpdateLabel();
         }
 
-        public void UpdateLabel()
+        public bool UpdateLabel()
         {
             var newText = "";
             for(var i = 0; i < Entries.Count; i++)
@@ -39,7 +39,12 @@ namespace SlopChat
                 if (i != Entries.Count - 1)
                     newText += "\n";
             }
-            _label.text = newText;
+            if (newText != _label.text)
+            {
+                _label.text = newText;
+                return true;
+            }
+            return false;
         }
 
         public void Append(Entry message)
