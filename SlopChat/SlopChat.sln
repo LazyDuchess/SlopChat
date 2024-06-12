@@ -5,6 +5,8 @@ VisualStudioVersion = 17.8.34511.84
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SlopChat", "SlopChat.csproj", "{71F2B63D-DD5C-4E73-9760-11822EE348FD}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SlopCrew.API", "..\libs\SlopCrew\SlopCrew.API\SlopCrew.API.csproj", "{0A53BD38-85D2-44C7-B168-CF0A8602836B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{71F2B63D-DD5C-4E73-9760-11822EE348FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{71F2B63D-DD5C-4E73-9760-11822EE348FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{71F2B63D-DD5C-4E73-9760-11822EE348FD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A53BD38-85D2-44C7-B168-CF0A8602836B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A53BD38-85D2-44C7-B168-CF0A8602836B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A53BD38-85D2-44C7-B168-CF0A8602836B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A53BD38-85D2-44C7-B168-CF0A8602836B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

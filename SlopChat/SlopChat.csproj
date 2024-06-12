@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net46</TargetFramework>
+    <TargetFramework>net462</TargetFramework>
     <AssemblyName>SlopChat</AssemblyName>
     <Description>My first plugin</Description>
     <Version>1.0.0</Version>
@@ -23,6 +23,10 @@
   
   <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.2" PrivateAssets="all" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\libs\SlopCrew\SlopCrew.API\SlopCrew.API.csproj" />
   </ItemGroup>
   
   <ItemGroup>
