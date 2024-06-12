@@ -59,7 +59,7 @@ namespace SlopChat
         private float _hostTimeout = 5f;
 
         private float _chatHistoryTimer = 0f;
-        private float _chatHistoryTime = 1f;
+        private float _chatHistoryTime = 2f;
 
         private float _chatFadeTimer = 0f;
         private float _chatFadeTime = 30f;
@@ -109,6 +109,7 @@ namespace SlopChat
                     player.Id = playerId;
                     player.HostId = heartBeat.HostId;
                     player.HostDate = heartBeat.HostStartTime;
+                    
                     break;
 
                 case ChatHistoryPacket.kGUID:
@@ -129,10 +130,12 @@ namespace SlopChat
                         {
                             entry.PlayerId = playerId;
                         }
+                        entry.Sanitize();
                     }
                     _history.Entries = chatHistory.Entries;
                     if (_history.UpdateLabel())
                         PingChat();
+                    
                     break;
 
                 case MessagePacket.kGUID:
@@ -149,12 +152,14 @@ namespace SlopChat
                     var messagePacket = packet as MessagePacket;
                     if (!SlopChatPlugin.Instance.ValidMessage(messagePacket.Message))
                         break;
-                    _history.Append(new ChatHistory.Entry()
+                    var newentry = new ChatHistory.Entry()
                     {
                         PlayerName = _slopAPI.GetPlayerName(playerId),
                         PlayerId = playerId,
-                        Message = SlopChatPlugin.Instance.SanitizeMessage(messagePacket.Message)
-                    });
+                        Message = messagePacket.Message
+                    };
+                    newentry.Sanitize();
+                    _history.Append(newentry);
                     PingChat();
                     SendChatHistory();
                     break;
@@ -177,9 +182,13 @@ namespace SlopChat
             var playersText = "Players in Text Chat:\n";
             if (CurrentNetworkState == NetworkStates.Server)
                 playersText += "<color=yellow>[HOST]";
+            else if (CurrentNetworkState != NetworkStates.Client)
+                playersText += "<color=red>[DISCONNECTED]";
             playersText += $"<color=white>{_slopAPI.PlayerName}\n";
             foreach (var player in ChatPlayersById)
             {
+                if (player.Value.NetworkState != NetworkStates.Client && player.Value.NetworkState != NetworkStates.Server)
+                    continue;
                 if (CurrentNetworkState == NetworkStates.Client && _hostId == player.Key)
                     playersText += "<color=yellow>[HOST]";
                 playersText += $"<color=white>{player.Value.Name}\n";
@@ -358,7 +367,7 @@ namespace SlopChat
             if (!_chatUI.activeInHierarchy) return false;
             var gameInput = Core.Instance.gameInput;
             var enabledMaps = gameInput.GetAllCurrentEnabledControllerMapCategoryIDs(0);
-            return enabledMaps.controllerMapCategoryIDs.Contains(0) && enabledMaps.controllerMapCategoryIDs.Contains(6) && enabledMaps.controllerMapCategoryIDs.Length == 2;
+            return enabledMaps.controllerMapCategoryIDs.Contains(0) && enabledMaps.controllerMapCategoryIDs.Contains(6);
         }
 
         private void EnableInputs()
@@ -406,11 +415,11 @@ namespace SlopChat
         private void SendChatMessage(string text)
         {
             var plugin = SlopChatPlugin.Instance;
-            text = plugin.SanitizeMessage(text);
             if (!plugin.ValidMessage(text)) return;
             if (CurrentNetworkState == NetworkStates.Server)
             {
                 var entry = new ChatHistory.Entry() { PlayerName = _slopAPI.PlayerName, PlayerId = uint.MaxValue, Message = text };
+                entry.Sanitize();
                 _history.Append(entry);
                 PingChat();
                 SendChatHistory();

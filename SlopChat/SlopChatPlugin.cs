@@ -47,6 +47,12 @@ namespace SlopChat
             return text;
         }
 
+        public string SanitizeName(string text)
+        {
+            text = SanitizeInput(text);
+            return text.Trim();
+        }
+
         public string SanitizeMessage(string text)
         {
             text = SanitizeInput(text);
@@ -55,6 +61,7 @@ namespace SlopChat
 
         public bool ValidMessage(string text)
         {
+            text = SanitizeMessage(text);
             if (text.IsNullOrWhiteSpace()) return false;
             return true;
         }

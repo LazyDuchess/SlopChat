@@ -15,6 +15,12 @@ namespace SlopChat
             public string PlayerName;
             public uint PlayerId;
             public string Message;
+
+            public void Sanitize()
+            {
+                PlayerName = SlopChatPlugin.Instance.SanitizeName(PlayerName);
+                Message = SlopChatPlugin.Instance.SanitizeMessage(Message);
+            }
         }
 
         public List<Entry> Entries;
@@ -44,6 +50,7 @@ namespace SlopChat
                 _label.text = newText;
                 return true;
             }
+            _label.text = newText;
             return false;
         }
 
