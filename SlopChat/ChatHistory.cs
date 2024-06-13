@@ -31,6 +31,10 @@ namespace SlopChat
         {
             _config = SlopChatPlugin.Instance.ChatConfig;
             Entries = [];
+            for(var i = 0; i < SlopChatPlugin.Instance.ChatConfig.MaxMessages; i++)
+            {
+                Entries.Add(null);
+            }
             _label = GetComponent<TextMeshProUGUI>();
             UpdateLabel();
         }
@@ -41,6 +45,7 @@ namespace SlopChat
             for(var i = 0; i < Entries.Count; i++)
             {
                 var entry = Entries[i];
+                if (entry == null) continue;
                 newText += $"<color=yellow>{entry.PlayerName}<color=white> : {entry.Message}";
                 if (i != Entries.Count - 1)
                     newText += "\n";
@@ -61,6 +66,12 @@ namespace SlopChat
             {
                 Entries.RemoveAt(0);
             }
+            UpdateLabel();
+        }
+
+        public void Set(Entry message, int position)
+        {
+            Entries[position] = message;
             UpdateLabel();
         }
     }

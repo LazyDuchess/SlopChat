@@ -124,18 +124,9 @@ namespace SlopChat
                     if (chPlayer.NetworkState != NetworkStates.Server)
                         break;
                     var chatHistory = packet as ChatHistoryPacket;
-                    foreach(var entry in chatHistory.Entries)
-                    {
-                        if (entry.PlayerId == uint.MaxValue)
-                        {
-                            entry.PlayerId = playerId;
-                        }
-                        entry.Sanitize();
-                    }
-                    _history.Entries = chatHistory.Entries;
+                    _history.Set(chatHistory.Entry, chatHistory.Index);
                     if (_history.UpdateLabel())
                         PingChat();
-                    
                     break;
 
                 case MessagePacket.kGUID:
@@ -198,9 +189,13 @@ namespace SlopChat
 
         private void SendChatHistory()
         {
-            var chatHistory = new ChatHistoryPacket();
-            chatHistory.Entries = _history.Entries;
-            PacketFactory.SendPacket(chatHistory, _slopAPI);
+            for(var i = 0; i < _history.Entries.Count; i++)
+            {
+                var chatHistory = new ChatHistoryPacket();
+                chatHistory.Index = i;
+                chatHistory.Entry = _history.Entries[i];
+                PacketFactory.SendPacket(chatHistory, _slopAPI);
+            }
         }
 
         private void Heartbeat()
