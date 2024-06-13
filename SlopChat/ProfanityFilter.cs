@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -47,15 +50,57 @@ namespace SlopChat
 
         public static bool TMPContainsProfanity(string tmpText)
         {
-            var validText = RemoveInvalidCharacters(tmpText);
-            if (ContainsProfanity(validText) || ContainsProfanity(TMPFilter.RemoveAllTags(validText)))
+            var removedTags = TMPFilter.RemoveAllTags(tmpText);
+            removedTags = SpecialCharactersToLetters(removedTags);
+            removedTags = RemoveSpecialCharacters(removedTags);
+
+            var withTags = tmpText;
+            withTags = SpecialCharactersToLetters(withTags);
+            withTags = RemoveSpecialCharacters(withTags);
+
+            var withTagsNoRepeats = RemoveRepeatedLetters(withTags);
+            var removedTagsNoRepeats = RemoveRepeatedLetters(removedTags);
+
+            if (ContainsProfanity(withTags) || ContainsProfanity(removedTags) || ContainsProfanity(withTagsNoRepeats) || ContainsProfanity(removedTagsNoRepeats))
                 return true;
             return false;
         }
 
-        public static string RemoveInvalidCharacters(string text)
+        public static string RemoveRepeatedLetters(string text)
         {
-            text = text.Replace("​", string.Empty);
+            var final = "";
+            var lastChar = char.MinValue;
+            foreach(var c in text)
+            {
+                if (c != lastChar)
+                {
+                    lastChar = c;
+                    final += c;
+                }
+            }
+            UnityEngine.Debug.Log(final);
+            return final;
+        }
+
+        public static string RemoveSpecialCharacters(string text)
+        {
+            var reg = new Regex(@"[^A-Za-z0-9]");
+            text = reg.Replace(text, string.Empty);
+            return text;
+        }
+
+        public static string SpecialCharactersToLetters(string text)
+        {
+            text = text.Replace("0", "o");
+            text = text.Replace("1", "i");
+            text = text.Replace("3", "e");
+            text = text.Replace("4", "a");
+            text = text.Replace("5", "s");
+            text = text.Replace("6", "g");
+            text = text.Replace("7", "t");
+            text = text.Replace("0", "o");
+
+            text = text.Replace("@", "a");
             return text;
         }
     }
