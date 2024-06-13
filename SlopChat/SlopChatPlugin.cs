@@ -41,6 +41,8 @@ namespace SlopChat
         public string SanitizeInput(string text)
         {
             text = text.Replace("\n", "");
+            text = text.Replace("\t", "");
+            text = text.Replace("\r", "");
             if (text.Length > ChatConfig.MaxCharacters)
             {
                 text = text.Substring(0, ChatConfig.MaxCharacters);
