@@ -16,6 +16,7 @@ namespace SlopChat
 {
     public class ChatController : MonoBehaviour
     {
+        public static Action<SendMessageEventArgs> OnSendMessage;
         public static ChatController Instance { get; private set; }
         public enum ChatStates
         {
@@ -411,6 +412,9 @@ namespace SlopChat
         {
             var plugin = SlopChatPlugin.Instance;
             if (!plugin.ValidMessage(text)) return;
+            var sendMessageArgs = new SendMessageEventArgs(text);
+            OnSendMessage?.Invoke(sendMessageArgs);
+            if (sendMessageArgs.Cancel) return;
             if (CurrentNetworkState == NetworkStates.Server)
             {
                 var entry = new ChatHistory.Entry() { PlayerName = _slopAPI.PlayerName, PlayerId = uint.MaxValue, Message = text };
