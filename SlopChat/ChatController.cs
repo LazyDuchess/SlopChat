@@ -59,7 +59,7 @@ namespace SlopChat
         private float _hostTimeout = 5f;
 
         private float _chatHistoryTimer = 0f;
-        private float _chatHistoryTime = 2f;
+        private float _chatHistoryTime = 1f;
 
         private float _chatFadeTimer = 0f;
         private float _chatFadeTime = 30f;
