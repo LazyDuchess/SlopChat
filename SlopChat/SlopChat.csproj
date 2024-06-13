@@ -12,6 +12,14 @@
   <PropertyGroup>
     <ManagedPath>$(BRCPath)/Bomb Rush Cyberfunk_Data/Managed</ManagedPath>
   </PropertyGroup>
+  
+  <ItemGroup>
+    <None Remove="res\profanity.txt" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <EmbeddedResource Include="res\profanity.txt" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all" />

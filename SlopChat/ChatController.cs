@@ -475,6 +475,12 @@ namespace SlopChat
                         {
                             if (CurrentNetworkState != NetworkStates.Server && CurrentNetworkState != NetworkStates.Client)
                                 return;
+                            if (SlopChatPlugin.Instance.ChatConfig.FilterProfanity && ProfanityFilter.TMPContainsProfanity(CurrentInput))
+                            {
+                                EnterChatState(ChatStates.Default);
+                                Core.Instance.UIManager.ShowNotification(ProfanityFilter.ProfanityError);
+                                return;
+                            }
                             SendChatMessage(CurrentInput);
                             EnterChatState(ChatStates.Default);
                             return;

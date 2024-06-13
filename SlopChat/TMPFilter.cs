@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace SlopChat
@@ -68,6 +69,13 @@ namespace SlopChat
             "voffset",
             "width"
         };
+
+        public static string RemoveAllTags(string text)
+        {
+            var rich = new Regex(@"<[^>]*>");
+            text = rich.Replace(text, string.Empty);
+            return text;
+        }
 
         public static string EscapeAllTags(string text)
         {

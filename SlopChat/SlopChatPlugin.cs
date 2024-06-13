@@ -4,7 +4,6 @@ using Reptile;
 using SlopChat.Patches;
 using System.IO;
 using UnityEngine;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace SlopChat
 {
@@ -63,6 +62,11 @@ namespace SlopChat
             text = SanitizeInput(text);
             text = text.Trim();
             text = TMPFilter.CloseAllTags(TMPFilter.FilterTags(text, ChatConfig.ChatCriteria));
+            if (ChatConfig.FilterProfanity)
+            {
+                if (ProfanityFilter.TMPContainsProfanity(text))
+                    return ProfanityFilter.CensoredMessage;
+            }
             return text;
         }
 

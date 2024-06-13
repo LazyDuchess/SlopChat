@@ -25,5 +25,6 @@ namespace SlopChat
                 "u",
                 ]
             , TMPFilter.Criteria.Kinds.Whitelist);
+        public bool FilterProfanity = true;
     }
 }
