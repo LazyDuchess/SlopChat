@@ -172,9 +172,9 @@ namespace SlopChat
 
             var playersText = "Players in Text Chat:\n";
             if (CurrentNetworkState == NetworkStates.Server)
-                playersText += "<color=yellow>[HOST]";
+                playersText += "<color=yellow>[HOST] ";
             else if (CurrentNetworkState != NetworkStates.Client)
-                playersText += "<color=red>[DISCONNECTED]";
+                playersText += "<color=red>[CONNECTING] ";
             playersText += $"<color=white>{_slopAPI.PlayerName}\n";
             foreach (var player in ChatPlayersById)
             {
