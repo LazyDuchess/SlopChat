@@ -372,13 +372,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 419179506416732846, guid: ca8b7db0fff98f1438abafd23fc40383, type: 3}
-      propertyPath: m_text
-      value: '<color=yellow>Lazy Duchess<color=white> : What''s good?
-
-        <color=red>StonyOnBRC<color=white>
-        : Nothing... nothing in my life is good. :(dddd'
-      objectReference: {fileID: 0}
     - target: {fileID: 2921395566887112706, guid: ca8b7db0fff98f1438abafd23fc40383, type: 3}
       propertyPath: m_Name
       value: Chat UI
@@ -426,22 +419,6 @@ PrefabInstance:
     - target: {fileID: 2921395566887112707, guid: ca8b7db0fff98f1438abafd23fc40383, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3462869151809801045, guid: ca8b7db0fff98f1438abafd23fc40383, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 410
-      objectReference: {fileID: 0}
-    - target: {fileID: 3462869151809801045, guid: ca8b7db0fff98f1438abafd23fc40383, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: -135.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 7110054327133487591, guid: ca8b7db0fff98f1438abafd23fc40383, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: -306.7
-      objectReference: {fileID: 0}
-    - target: {fileID: 8594620477519772619, guid: ca8b7db0fff98f1438abafd23fc40383, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 410
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ca8b7db0fff98f1438abafd23fc40383, type: 3}
