@@ -1,6 +1,7 @@
 # This profanity list was originally from github.com/stephenhaunts/ProfanityDetector
 # ...but it had a lot of false positives and a 'scorched earth' approach
 # yungotachi cut it out - thanks!
+# further edits made for slopchat - brought over from slopcrew
 acrotomophilia
 arian
 aryan
@@ -156,7 +157,6 @@ jaggi
 jagoff
 jail bait
 jailbait
-jap
 japs
 japseye
 jigaboo
@@ -199,6 +199,7 @@ nazi
 nazism
 negro
 neonazi
+niga
 nig nog
 nigaboo
 nigg3r
@@ -234,7 +235,6 @@ pollock
 poof
 porch monkey
 porchmonkey
-puto
 queer
 queerbait
 queerhole
