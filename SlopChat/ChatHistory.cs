@@ -72,7 +72,6 @@ namespace SlopChat
         public void Set(Entry message, int position)
         {
             Entries[position] = message;
-            UpdateLabel();
         }
     }
 }

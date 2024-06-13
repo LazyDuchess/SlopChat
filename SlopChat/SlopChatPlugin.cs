@@ -4,6 +4,7 @@ using Reptile;
 using SlopChat.Patches;
 using System.IO;
 using UnityEngine;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace SlopChat
 {
@@ -50,13 +51,17 @@ namespace SlopChat
         public string SanitizeName(string text)
         {
             text = SanitizeInput(text);
-            return text.Trim();
+            text = text.Trim();
+            text = TMPFilter.CloseAllTags(TMPFilter.FilterTags(text, ChatConfig.ChatCriteria));
+            return text;
         }
 
         public string SanitizeMessage(string text)
         {
             text = SanitizeInput(text);
-            return text.Trim();
+            text = text.Trim();
+            text = TMPFilter.CloseAllTags(TMPFilter.FilterTags(text, ChatConfig.ChatCriteria));
+            return text;
         }
 
         public bool ValidMessage(string text)

@@ -182,7 +182,7 @@ namespace SlopChat
                     continue;
                 if (CurrentNetworkState == NetworkStates.Client && _hostId == player.Key)
                     playersText += "<color=yellow>[HOST]";
-                playersText += $"<color=white>{player.Value.Name}\n";
+                playersText += $"<color=white>{SlopChatPlugin.Instance.SanitizeName(player.Value.Name)}\n";
             }
             _playersLabel.text = playersText;
         }
@@ -486,10 +486,10 @@ namespace SlopChat
                     }
                 }
                 CurrentInput = SlopChatPlugin.Instance.SanitizeInput(CurrentInput);
-                _inputLabel.text = $"<color=#87e5e5>Say</color> : {CurrentInput}";
+                _inputLabel.text = $"<color=#87e5e5>Say</color> : {TMPFilter.FilterTags(CurrentInput, SlopChatPlugin.Instance.ChatConfig.ChatCriteria)}";
                 if (_caretTimer >= _caretTime)
                 {
-                    _inputLabel.text += "<color=white>|</color>";
+                    _inputLabel.text += "|";
                     if (_caretTimer >= _caretTime * 2f)
                         _caretTimer = 0f;
                 }
