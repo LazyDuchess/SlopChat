@@ -21,6 +21,7 @@ namespace SlopChat
             ChatConfig = new ChatConfig();
             Patch();
             StageManager.OnStagePostInitialization += StageManager_OnStagePostInitialization;
+            ChatCommands.Initialize();
             Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
         }
 

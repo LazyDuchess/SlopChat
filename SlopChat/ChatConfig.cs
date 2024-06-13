@@ -9,7 +9,7 @@ namespace SlopChat
     public class ChatConfig
     {
         public int MaxMessages = 10;
-        public int MaxCharacters = 150;
+        public int MaxCharacters = 200;
         public bool PhoneOutWhileTyping = true;
         public TMPFilter.Criteria ChatCriteria = new TMPFilter.Criteria(
             [

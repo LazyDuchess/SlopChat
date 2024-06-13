@@ -8,7 +8,6 @@ using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace SlopChat
 {
@@ -32,6 +31,8 @@ namespace SlopChat
             {
                 var trimmed = line.Trim();
                 if (trimmed.StartsWith("#")) continue;
+                trimmed = RemoveSpecialCharacters(trimmed);
+                trimmed = SpecialCharactersToLetters(trimmed);
                 result.Add(trimmed);
             }
 

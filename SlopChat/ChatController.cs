@@ -16,6 +16,8 @@ namespace SlopChat
 {
     public class ChatController : MonoBehaviour
     {
+        public static HashSet<string> MutedPlayers = new();
+        public static bool HideWhileNotTyping = false;
         public static Action<SendMessageEventArgs> OnSendMessage;
         public static ChatController Instance { get; private set; }
         public enum ChatStates
@@ -176,13 +178,14 @@ namespace SlopChat
                 playersText += "<color=yellow>[HOST] ";
             else if (CurrentNetworkState != NetworkStates.Client)
                 playersText += "<color=red>[CONNECTING] ";
-            playersText += $"<color=white>{_slopAPI.PlayerName}\n";
+            playersText += $"<color=white>{SlopChatPlugin.Instance.SanitizeName(_slopAPI.PlayerName)}\n";
             foreach (var player in ChatPlayersById)
             {
                 if (player.Value.NetworkState != NetworkStates.Client && player.Value.NetworkState != NetworkStates.Server)
                     continue;
+                playersText += $"<color=white>{player.Key} - ";
                 if (CurrentNetworkState == NetworkStates.Client && _hostId == player.Key)
-                    playersText += "<color=yellow>[HOST]";
+                    playersText += "<color=yellow>[HOST] ";
                 playersText += $"<color=white>{SlopChatPlugin.Instance.SanitizeName(player.Value.Name)}\n";
             }
             _playersLabel.text = playersText;
@@ -410,6 +413,7 @@ namespace SlopChat
 
         private void SendChatMessage(string text)
         {
+            EnterChatState(ChatStates.Default);
             var plugin = SlopChatPlugin.Instance;
             if (!plugin.ValidMessage(text)) return;
             var sendMessageArgs = new SendMessageEventArgs(text);
@@ -486,7 +490,6 @@ namespace SlopChat
                                 return;
                             }
                             SendChatMessage(CurrentInput);
-                            EnterChatState(ChatStates.Default);
                             return;
                         }
                         else
@@ -528,6 +531,13 @@ namespace SlopChat
             ChatUpdate();   
             NetworkUpdate();
             _chatFadeTimer += Core.dt;
+            if (HideWhileNotTyping)
+            {
+                if (CurrentChatState == ChatStates.Typing)
+                    _chatFadeTimer = 0f;
+                else
+                    _chatFadeTimer = _chatFadeTime;
+            }
             if (_chatFadeTimer >= _chatFadeTime)
             {
                 _chatFadeTimer = _chatFadeTime;

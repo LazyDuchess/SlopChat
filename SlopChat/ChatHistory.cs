@@ -46,7 +46,10 @@ namespace SlopChat
             {
                 var entry = Entries[i];
                 if (entry == null) continue;
-                newText += $"<color=yellow>{entry.PlayerName}<color=white> : {entry.Message}";
+                var message = entry.Message;
+                if (ChatController.MutedPlayers.Contains(TMPFilter.RemoveAllTags(entry.PlayerName)))
+                    message = "Muted message.";
+                newText += $"<color=yellow>{entry.PlayerName}<color=white> : {message}";
                 if (i != Entries.Count - 1)
                     newText += "\n";
             }
