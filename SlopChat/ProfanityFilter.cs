@@ -89,8 +89,8 @@ namespace SlopChat
             foreach(var line in BadWords)
             {
                 if (text == line) return true;
-                if (text.Contains($"{line} ")) return true;
-                if (text.Contains($" {line}")) return true;
+                if (text.StartsWith($"{line} ")) return true;
+                if (text.EndsWith($" {line}")) return true;
                 if (text.Contains($" {line} ")) return true;
             }
             return false;
@@ -101,9 +101,15 @@ namespace SlopChat
             text = text.ToLower();
             foreach(var line in SafeWords)
             {
+                if (text == line) return "";
+
                 text = text.Replace($" {line} ", "");
-                text = text.Replace($" {line}", "");
-                text = text.Replace($"{line} ", "");
+
+                if (text.StartsWith($"{line} "))
+                    text = text.Substring(line.Length + 1);
+
+                if (text.EndsWith($" {line}"))
+                    text = text.Substring(0, text.Length - line.Length - 1);
             }
             return text;
         }
