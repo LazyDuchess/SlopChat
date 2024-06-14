@@ -158,7 +158,6 @@ namespace SlopChat
                     final += c;
                 }
             }
-            UnityEngine.Debug.Log(final);
             return final;
         }
 
