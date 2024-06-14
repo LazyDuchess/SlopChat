@@ -2,12 +2,14 @@
 using HarmonyLib;
 using Reptile;
 using SlopChat.Patches;
+using System;
 using System.IO;
 using UnityEngine;
 
 namespace SlopChat
 {
     [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
+    [BepInDependency("SlopCrew.Plugin", BepInDependency.DependencyFlags.HardDependency)]
     public class SlopChatPlugin : BaseUnityPlugin
     {
         public static SlopChatPlugin Instance { get; private set; }
@@ -16,13 +18,20 @@ namespace SlopChat
 
         private void Awake()
         {
-            Instance = this;
-            Assets = new ChatAssets(Path.GetDirectoryName(Info.Location));
-            ChatConfig = new ChatConfig();
-            Patch();
-            StageManager.OnStagePostInitialization += StageManager_OnStagePostInitialization;
-            ChatCommands.Initialize();
-            Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
+            try
+            {
+                Instance = this;
+                Assets = new ChatAssets(Path.GetDirectoryName(Info.Location));
+                ChatConfig = new ChatConfig();
+                Patch();
+                StageManager.OnStagePostInitialization += StageManager_OnStagePostInitialization;
+                ChatCommands.Initialize();
+                Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} {PluginInfo.PLUGIN_VERSION} is loaded!");
+            }
+            catch (Exception e)
+            {
+                Logger.LogError($"Failed to load {PluginInfo.PLUGIN_NAME} {PluginInfo.PLUGIN_VERSION}!{Environment.NewLine}{e}");
+            }
         }
 
         private void Patch()
