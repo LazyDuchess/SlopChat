@@ -1,0 +1,5 @@
+# A list of words that are okay but might be caught by the filter.
+if
+what
+when
+as

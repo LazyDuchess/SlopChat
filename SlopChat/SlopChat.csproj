@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net462</TargetFramework>
@@ -14,11 +14,15 @@
   </PropertyGroup>
   
   <ItemGroup>
+    <None Remove="res\badwords.txt" />
     <None Remove="res\profanity.txt" />
+    <None Remove="res\safewords.txt" />
   </ItemGroup>
   
   <ItemGroup>
+    <EmbeddedResource Include="res\badwords.txt" />
     <EmbeddedResource Include="res\profanity.txt" />
+    <EmbeddedResource Include="res\safewords.txt" />
   </ItemGroup>
 
   <ItemGroup>
