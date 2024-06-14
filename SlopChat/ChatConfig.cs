@@ -17,7 +17,6 @@ namespace SlopChat
                 "color",
                 "i",
                 "mark",
-                "rotate",
                 "sprite",
                 "s",
                 "sub",
