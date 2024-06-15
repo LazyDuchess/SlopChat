@@ -166,12 +166,16 @@ namespace SlopChat
                         break;
                     var chatHistory = packet as ChatHistoryPacket;
 
-                    if (chatHistory.Entry.PlayerId == uint.MaxValue)
-                        chatHistory.Entry.PlayerId = playerId;
+                    if (chatHistory.Entry != null)
+                    {
+                        if (chatHistory.Entry.PlayerId == uint.MaxValue)
+                            chatHistory.Entry.PlayerId = playerId;
+                    }
 
                     _history.Set(chatHistory.Entry, chatHistory.Index);
                     if (_history.UpdateLabel())
                         PingChat();
+
                     break;
 
                 case MessagePacket.kGUID:
@@ -220,7 +224,7 @@ namespace SlopChat
                 playersText += "<color=red>[HOST] ";
             else if (CurrentNetworkState != NetworkStates.Client)
                 playersText += "<color=red>[CONNECTING] ";
-            if (Status != "")
+            if (!string.IsNullOrWhiteSpace(Status))
             {
                 playersText += $"<color=yellow>[{Status}] </color>";
             }
@@ -232,9 +236,9 @@ namespace SlopChat
                 playersText += $"<color=white>{player.Key} - ";
                 if (CurrentNetworkState == NetworkStates.Client && _hostId == player.Key)
                     playersText += "<color=red>[HOST] ";
-                if (player.Value.Status != "" && !MutedPlayers.Contains(TMPFilter.RemoveAllTags(player.Value.Name)))
+                if (!string.IsNullOrWhiteSpace(player.Value.Status) && !MutedPlayers.Contains(TMPFilter.RemoveAllTags(player.Value.Name)))
                 {
-                    playersText += $"<color=yellow>[{Status}] </color>";
+                    playersText += $"<color=yellow>[{player.Value.Status}] </color>";
                 }
                 playersText += $"<color=white>{SlopChatPlugin.Instance.SanitizeName(player.Value.Name)}\n";
             }

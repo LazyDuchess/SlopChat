@@ -53,14 +53,14 @@ namespace SlopChat
                 else
                 {
                     if (ChatController.Instance.ChatPlayersById.TryGetValue(entry.PlayerId, out var player)) {
-                        if (player.Status != "")
+                        if (!string.IsNullOrWhiteSpace(player.Status))
                         {
                             newText += $"<color=yellow>[{player.Status}]</color> ";
                         }
                     }
                     else if (APIManager.API.PlayerIDExists(entry.PlayerId) == false && TMPFilter.RemoveAllTags(entry.PlayerName) == TMPFilter.RemoveAllTags(APIManager.API.PlayerName))
                     {
-                        if (ChatController.Status != "")
+                        if (!string.IsNullOrWhiteSpace(ChatController.Status))
                         {
                             newText += $"<color=yellow>[{ChatController.Status}]</color> ";
                         }
