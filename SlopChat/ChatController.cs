@@ -57,7 +57,7 @@ namespace SlopChat
         private float _caretTime = 0.5f;
 
         private float _heartBeatTimer = 0f;
-        private float _heartBeatTime = 0.2f;
+        private float _heartBeatTime = 0.5f;
         private float _heartBeatTimeout = 5f;
 
         private ISlopCrewAPI _slopAPI;
