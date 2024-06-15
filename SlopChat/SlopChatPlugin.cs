@@ -1,9 +1,11 @@
 ﻿using BepInEx;
+using BepInEx.Bootstrap;
 using HarmonyLib;
 using Reptile;
 using SlopChat.Patches;
 using System;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 
 namespace SlopChat
@@ -18,6 +20,13 @@ namespace SlopChat
 
         private void Awake()
         {
+            var slopConfig = Chainloader.PluginInfos["SlopCrew.Plugin"].Instance.Config;
+            var hostConfig = slopConfig.First(x => x.Key.Section == "Server" && x.Key.Key == "Host");
+            if (hostConfig.Value.BoxedValue == hostConfig.Value.DefaultValue)
+            {
+                Logger.LogError("SlopChat is not allowed on the official SlopCrew server.");
+                return;
+            }
             try
             {
                 Instance = this;
@@ -67,7 +76,7 @@ namespace SlopChat
             return text;
         }
 
-        public string SanitizeMessage(string text)
+        public string SanitizeMessage(string text, string censor)
         {
             text = SanitizeInput(text);
             text = text.Trim();
@@ -75,14 +84,14 @@ namespace SlopChat
             if (ChatConfig.FilterProfanity)
             {
                 if (ProfanityFilter.TMPContainsProfanity(text))
-                    return ProfanityFilter.CensoredMessage;
+                    return censor;
             }
             return text;
         }
 
         public bool ValidMessage(string text)
         {
-            text = SanitizeMessage(text);
+            text = SanitizeMessage(text, ProfanityFilter.CensoredMessage);
             if (text.IsNullOrWhiteSpace()) return false;
             return true;
         }

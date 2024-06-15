@@ -16,6 +16,9 @@ namespace SlopChat
         public const string CensoredMessage = "I said a naughty word!";
         public const string ProfanityError = "Your message contains banned words.";
 
+        public const string CensoredStatus = "Saying Slurs";
+        public const string StatusProfanityError = "Your status contains banned words.";
+
         private static List<string> BannedContent = LoadBannedContent();
         private static List<string> SafeWords = LoadSafeWords();
         private static List<string> BadWords = LoadBadWords();

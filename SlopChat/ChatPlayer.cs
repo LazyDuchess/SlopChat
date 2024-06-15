@@ -14,5 +14,6 @@ namespace SlopChat
         public uint HostId;
         public DateTime LastHeartBeat;
         public DateTime HostDate;
+        public string Status;
     }
 }

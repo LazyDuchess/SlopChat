@@ -18,6 +18,7 @@ namespace SlopChat
 
         public static void OnSendMessage(SendMessageEventArgs e)
         {
+            var capitalizedText = e.Message.Trim();
             var text = e.Message.Trim().ToLowerInvariant();
 
             if (text[0] == '/')
@@ -84,6 +85,43 @@ namespace SlopChat
                 case "unmuteall":
                     ChatController.MutedPlayers.Clear();
                     uiManager.ShowNotification("Unmuted all players");
+                    break;
+
+                case "status":
+                    if (args.Length < 2)
+                    {
+                        ChatController.Instance.SetStatus("");
+                    }
+                    else
+                    {
+                        var status = capitalizedText.Substring(7).Trim();
+
+                        if (!SlopChatPlugin.Instance.ValidMessage(status))
+                        {
+                            ChatController.Instance.SetStatus("");
+                            return;
+                        }
+
+                        if (ProfanityFilter.TMPContainsProfanity(status))
+                        {
+                            uiManager.ShowNotification(ProfanityFilter.StatusProfanityError);
+                            return;
+                        }
+
+                        if (status.Length > SlopChatPlugin.Instance.ChatConfig.MaxStatusCharacters)
+                        {
+                            status = status.Substring(0, SlopChatPlugin.Instance.ChatConfig.MaxStatusCharacters);
+                        }
+
+                        var sanitizedStatus = SlopChatPlugin.Instance.SanitizeMessage(status, ProfanityFilter.CensoredStatus);
+
+                        ChatController.Instance.SetStatus(sanitizedStatus);
+                    }
+                    break;
+
+                case "side":
+                    ChatController.LeftSide = !ChatController.LeftSide;
+                    ChatController.Instance.SwitchChatHistorySide();
                     break;
             }
         }

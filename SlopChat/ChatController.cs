@@ -16,6 +16,8 @@ namespace SlopChat
 {
     public class ChatController : MonoBehaviour
     {
+        public static bool LeftSide = false;
+        public static string Status = "";
         public static HashSet<string> MutedPlayers = new();
         public static bool HideWhileNotTyping = false;
         public static Action<SendMessageEventArgs> OnSendMessage;
@@ -48,6 +50,8 @@ namespace SlopChat
         private TextMeshProUGUI _inputLabel;
         private TextMeshProUGUI _playersLabel;
         private ChatHistory _history;
+        private GameObject _historyLeft;
+        private GameObject _historyRight;
 
         private float _caretTimer = 0f;
         private float _caretTime = 0.5f;
@@ -85,10 +89,44 @@ namespace SlopChat
             _inputLabel = chatCanvas.transform.Find("Chat Input").GetComponent<TextMeshProUGUI>();
             _playersLabel = chatCanvas.transform.Find("Chat Players").GetComponent<TextMeshProUGUI>();
             _history = chatCanvas.transform.Find("Chat History").gameObject.AddComponent<ChatHistory>();
-            _chatUI.transform.SetParent(Core.Instance.UIManager.gameplay.transform);
+            _historyRight = _history.gameObject;
+            _historyLeft = chatCanvas.transform.Find("Chat History Left").gameObject;
+            _historyLeft.AddComponent<ChatHistory>();
+            _historyLeft.SetActive(false);
+            _chatUI.transform.SetParent(Core.Instance.UIManager.gameplay.transform.parent);
             _playersLabel.text = "";
             EnterChatState(ChatStates.Default);
             CurrentNetworkState = NetworkStates.LookingForHost;
+            if (LeftSide)
+                SwitchChatHistorySide();
+        }
+
+        public void SetStatus(string status)
+        {
+            Status = status;
+            _history.UpdateLabel();
+        }
+
+        public void SwitchChatHistorySide()
+        {
+            if (_historyLeft.activeSelf)
+            {
+                _historyLeft.SetActive(false);
+                _historyRight.SetActive(true);
+                var history = _historyRight.GetComponent<ChatHistory>();
+                history.Entries = _history.Entries;
+                _history = history;
+                _history.UpdateLabel();
+            }
+            else
+            {
+                _historyLeft.SetActive(true);
+                _historyRight.SetActive(false);
+                var history = _historyLeft.GetComponent<ChatHistory>();
+                history.Entries = _history.Entries;
+                _history = history;
+                _history.UpdateLabel();
+            }
         }
 
         private void OnPacketReceived(uint playerId, string guid, byte[] data)
@@ -112,7 +150,7 @@ namespace SlopChat
                     player.Id = playerId;
                     player.HostId = heartBeat.HostId;
                     player.HostDate = heartBeat.HostStartTime;
-                    
+                    player.Status = SlopChatPlugin.Instance.SanitizeMessage(heartBeat.Status, ProfanityFilter.CensoredStatus);
                     break;
 
                 case ChatHistoryPacket.kGUID:
@@ -127,6 +165,10 @@ namespace SlopChat
                     if (chPlayer.NetworkState != NetworkStates.Server)
                         break;
                     var chatHistory = packet as ChatHistoryPacket;
+
+                    if (chatHistory.Entry.PlayerId == uint.MaxValue)
+                        chatHistory.Entry.PlayerId = playerId;
+
                     _history.Set(chatHistory.Entry, chatHistory.Index);
                     if (_history.UpdateLabel())
                         PingChat();
@@ -175,9 +217,13 @@ namespace SlopChat
 
             var playersText = "Players in Text Chat:\n";
             if (CurrentNetworkState == NetworkStates.Server)
-                playersText += "<color=yellow>[HOST] ";
+                playersText += "<color=red>[HOST] ";
             else if (CurrentNetworkState != NetworkStates.Client)
                 playersText += "<color=red>[CONNECTING] ";
+            if (Status != "")
+            {
+                playersText += $"<color=yellow>[{Status}] </color>";
+            }
             playersText += $"<color=white>{SlopChatPlugin.Instance.SanitizeName(_slopAPI.PlayerName)}\n";
             foreach (var player in ChatPlayersById)
             {
@@ -185,7 +231,11 @@ namespace SlopChat
                     continue;
                 playersText += $"<color=white>{player.Key} - ";
                 if (CurrentNetworkState == NetworkStates.Client && _hostId == player.Key)
-                    playersText += "<color=yellow>[HOST] ";
+                    playersText += "<color=red>[HOST] ";
+                if (player.Value.Status != "" && !MutedPlayers.Contains(TMPFilter.RemoveAllTags(player.Value.Name)))
+                {
+                    playersText += $"<color=yellow>[{Status}] </color>";
+                }
                 playersText += $"<color=white>{SlopChatPlugin.Instance.SanitizeName(player.Value.Name)}\n";
             }
             _playersLabel.text = playersText;
@@ -209,7 +259,8 @@ namespace SlopChat
             {
                 NetworkState = CurrentNetworkState,
                 HostId = _hostId,
-                HostStartTime = _hostDate
+                HostStartTime = _hostDate,
+                Status = Status
             };
             PacketFactory.SendPacket(packet, _slopAPI);
         }

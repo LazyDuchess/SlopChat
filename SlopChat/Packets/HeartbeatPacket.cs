@@ -11,10 +11,11 @@ namespace SlopChat.Packets
     {
         public const string kGUID = "SlopChat-Heartbeat";
         public override string GUID => kGUID;
-        private const byte Version = 0;
+        private const byte Version = 1;
         public ChatController.NetworkStates NetworkState = ChatController.NetworkStates.None;
         public uint HostId = uint.MaxValue;
         public DateTime HostStartTime;
+        public string Status = "";
 
         public override void Write(BinaryWriter writer)
         {
@@ -22,6 +23,7 @@ namespace SlopChat.Packets
             writer.Write((int)NetworkState);
             writer.Write(HostId);
             writer.Write(HostStartTime.ToBinary());
+            writer.Write(Status);
         }
 
         public override void Read(BinaryReader reader)
@@ -30,6 +32,10 @@ namespace SlopChat.Packets
             NetworkState = (ChatController.NetworkStates)reader.ReadInt32();
             HostId = reader.ReadUInt32();
             HostStartTime = DateTime.FromBinary(reader.ReadInt64());
+            if (version > 0)
+            {
+                Status = reader.ReadString();
+            }
         }
     }
 }

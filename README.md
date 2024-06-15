@@ -1,6 +1,6 @@
 # SlopChat
 > [!IMPORTANT]  
-> This mod doesn't work great on the official SlopCrew server, support will not be offered on there.
+> This mod doesn't work on the official SlopCrew server, support will not be offered on there.
 > It's recommended you use this mod in the [Freesoul](https://discord.com/invite/YUfhan9gSk) server.
 
 ![image](https://github.com/LazyDuchess/SlopChat/assets/42678262/264b318e-f0dd-4fb1-9f43-e117327c6551)
@@ -19,8 +19,10 @@ When you're typing in chat, you will see a player list show up in the top left c
 ## Commands
 There are some special commands you can use in chat.
 
-* **/hide** - Hides the chat history unless you bring it up manually by pressing `Tab`
-* **/show** - Shows the chat history as normal
-* **/mute** [Player ID] - Mutes a player
-* **/unmute** [Player ID] - Unmutes a player
+* **/hide** - Hides the chat history unless you bring it up manually by pressing `Tab`.
+* **/show** - Shows the chat history as normal.
+* **/mute** [Player ID] - Mutes a player.
+* **/unmute** [Player ID] - Unmutes a player.
 * **/unmuteall** - Unmutes all muted players.
+* **/status** [Text] - Sets your status. Shows up next to your name.
+* **/side** - Switches chat history side.

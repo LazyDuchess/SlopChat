@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SlopCrew.API;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,7 +20,7 @@ namespace SlopChat
             public void Sanitize()
             {
                 PlayerName = SlopChatPlugin.Instance.SanitizeName(PlayerName);
-                Message = SlopChatPlugin.Instance.SanitizeMessage(Message);
+                Message = SlopChatPlugin.Instance.SanitizeMessage(Message, ProfanityFilter.CensoredMessage);
             }
         }
 
@@ -49,6 +50,22 @@ namespace SlopChat
                 var message = entry.Message;
                 if (ChatController.MutedPlayers.Contains(TMPFilter.RemoveAllTags(entry.PlayerName)))
                     message = "Muted message.";
+                else
+                {
+                    if (ChatController.Instance.ChatPlayersById.TryGetValue(entry.PlayerId, out var player)) {
+                        if (player.Status != "")
+                        {
+                            newText += $"<color=yellow>[{player.Status}]</color> ";
+                        }
+                    }
+                    else if (APIManager.API.PlayerIDExists(entry.PlayerId) == false && TMPFilter.RemoveAllTags(entry.PlayerName) == TMPFilter.RemoveAllTags(APIManager.API.PlayerName))
+                    {
+                        if (ChatController.Status != "")
+                        {
+                            newText += $"<color=yellow>[{ChatController.Status}]</color> ";
+                        }
+                    }
+                }
                 newText += $"<color=yellow>{entry.PlayerName}<color=white> : {message}";
                 if (i != Entries.Count - 1)
                     newText += "\n";

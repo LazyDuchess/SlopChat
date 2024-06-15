@@ -9,6 +9,7 @@ namespace SlopChat
     public class ChatConfig
     {
         public int MaxMessages = 10;
+        public int MaxStatusCharacters = 16;
         public int MaxCharacters = 200;
         public bool PhoneOutWhileTyping = true;
         public TMPFilter.Criteria ChatCriteria = new TMPFilter.Criteria(
@@ -23,7 +24,8 @@ namespace SlopChat
                 "sup",
                 "u",
                 ]
-            , TMPFilter.Criteria.Kinds.Whitelist);
+            , TMPFilter.Criteria.Kinds.Whitelist
+            );
         public bool FilterProfanity = true;
     }
 }
